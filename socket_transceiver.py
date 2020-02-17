@@ -28,7 +28,9 @@
 import sys, asyncore
 from time import time
 from SX127x.LoRa import *
-from SX127x.board_config import BOARD
+del globals()['LoRa']
+from SX127x.LoRa import LoRa2 as LoRa
+from SX127x.board_config import BOARD2 as BOARD
 
 BOARD.setup()
 
@@ -86,6 +88,7 @@ class LoRaSocket(LoRa):
         
         if len(payload) == 127:
             self.payload[len(self.payload):] = payload
+            print('interim recv')
         else:
             self.payload[len(self.payload):] = payload
             print('Recv:' + str(bytes(self.payload)))

@@ -23,8 +23,10 @@
 
 import time
 from SX127x.LoRa import *
+del globals()['LoRa']
+from SX127x.LoRa import LoRa2 as LoRa
 #from SX127x.LoRaArgumentParser import LoRaArgumentParser
-from SX127x.board_config import BOARD
+from SX127x.board_config import BOARD2 as BOARD
 
 BOARD.setup()
 BOARD.reset()
