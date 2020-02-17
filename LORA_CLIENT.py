@@ -23,8 +23,10 @@
 
 import time
 from SX127x.LoRa import *
+del globals()['LoRa']
+from SX127x.LoRa import LoRa2 as LoRa
 #from SX127x.LoRaArgumentParser import LoRaArgumentParser
-from SX127x.board_config import BOARD
+from SX127x.board_config import BOARD2 as BOARD
 
 BOARD.setup()
 BOARD.reset()
@@ -47,8 +49,8 @@ class mylora(LoRa):
         mens=mens[2:-1] #to discard \x00\x00 and \x00 at the end
         print(mens)
         BOARD.led_off()
-        if mens=="INF":
-            print("Received data request INF")
+        if mens != "ACK":
+            print("Received data: " + str(mens))
             time.sleep(2)
             print ("Send mens: DATA RASPBERRY PI")
             self.write_payload([255, 255, 0, 0, 68, 65, 84, 65, 32, 82, 65, 83, 80, 66, 69, 82, 82, 89, 32, 80, 73, 0]) # Send DATA RASPBERRY PI
