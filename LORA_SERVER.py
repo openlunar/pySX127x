@@ -21,6 +21,7 @@
 # You should have received a copy of the GNU General Public License along with pySX127.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+import itertools
 import time
 from SX127x.LoRa import *
 #from SX127x.LoRaArgumentParser import LoRaArgumentParser
@@ -30,6 +31,7 @@ BOARD.setup()
 BOARD.reset()
 #parser = LoRaArgumentParser("Lora tester")
 
+chars = "0123456789abcdefghijklmnopqrstuvwxyz"
 
 class mylora(LoRa):
     def __init__(self, verbose=False):
@@ -78,22 +80,28 @@ class mylora(LoRa):
 
     def start(self):          
         while True:
-            while (self.var==0):
-                print ("Send: INF")
-                self.write_payload([255, 255, 0, 0, 73, 78, 70, 0]) # Send INF
-                self.set_mode(MODE.TX)
-                time.sleep(3) # there must be a better solution but sleep() works
-                self.reset_ptr_rx()
-                self.set_mode(MODE.RXCONT) # Receiver mode
-            
-                start_time = time.time()
-                while (time.time() - start_time < 10): # wait until receive data or 10s
-                    pass;
-            
-            self.var=0
-            self.reset_ptr_rx()
-            self.set_mode(MODE.RXCONT) # Receiver mode
-            time.sleep(10)
+            text_to_send = ""
+            n = 2
+            for i in range(1, n+1):
+                for item in itertools.product(chars, repeat=i):
+                    text_to_send = text_to_send + "".join(item)
+                    while (self.var==0):
+                        print ("Send: " + text_to_send)
+                        # self.write_payload([255, 255, 0, 0, 73, 78, 70, 0]) # Send INF
+                        self.write_payload([255, 255, 0, 0] + [ord(c) for c in text_to_send] + [0]) # Send INF
+                        self.set_mode(MODE.TX)
+                        time.sleep(3) # there must be a better solution but sleep() works
+                        self.reset_ptr_rx()
+                        self.set_mode(MODE.RXCONT) # Receiver mode
+                    
+                        start_time = time.time()
+                        while (time.time() - start_time < 10): # wait until receive data or 10s
+                            pass;
+                    
+                    self.var=0
+                    self.reset_ptr_rx()
+                    self.set_mode(MODE.RXCONT) # Receiver mode
+                    time.sleep(10)
 
 lora = mylora(verbose=False)
 #args = parser.parse_args(lora) # configs in LoRaArgumentParser.py
